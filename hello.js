@@ -28,7 +28,13 @@ const COUNTRY_DATA = [
     alt: "La bandera de España",
     title: "Redirigir al sito en español"
   }
-]
+];
+
+const LANGUAGE_CODES = {
+  english: "en-US",
+  french: "fr-FR",
+  serbian: "sr-Cryl-rs",
+};
 
 // setting pug as templating engine
 app.set("views", "./views");
@@ -49,36 +55,27 @@ app.get('/', (req, res) => {
   res.redirect("/english");
 });
 
-app.get('/english', (req, res) => {
-  res.render("hello-world-english", {
-    countries: COUNTRY_DATA,
-    currentPath: req.path,
-    language: 'en-US'
-  });
+app.get('/:language', (req, res, next) => {
+  const language = req.params.language;
+  const languageCode = LANGUAGE_CODES[language];
+
+  // validate user entered path
+  if (!languageCode) {
+    next(new Error(`Language not supported: ${language}`));
+  } else {
+    res.status(202).render(`hello-world-${language}`, {
+      countries: COUNTRY_DATA,
+      currentPath: req.path,
+      language: LANGUAGE_CODES[language],
+    });
+  }
 });
 
-app.get('/french', (req, res) => {
-  res.render("hello-world-french", {
-    countries: COUNTRY_DATA,
-    currentPath: req.path,
-    language: 'fr-FR'
-  });
-});
 
-app.get('/serbian', (req, res) => {
-  res.render("hello-world-serbian", {
-    countries: COUNTRY_DATA,
-    currentPath: req.path,
-    language: "sr-Cyrl-rs"
-  });
-});
-
-app.get('/spanish', (req, res) => {
-  res.render("hello-world-spanish", {
-    countries: COUNTRY_DATA,
-    currentPath: req.path,
-    language: "es-ES"
-  });
+// error handler
+app.use((err, req, res, _next) => {
+  console.log(err);
+  res.status(404).send(err.message);
 });
 
 // server
