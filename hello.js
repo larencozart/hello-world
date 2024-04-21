@@ -34,6 +34,7 @@ const LANGUAGE_CODES = {
   english: "en-US",
   french: "fr-FR",
   serbian: "sr-Cryl-rs",
+  spanish: "es-ES"
 };
 
 // setting pug as templating engine
